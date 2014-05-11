@@ -2,10 +2,10 @@
 <div class="row">
 	<div class="col-md-6">
 		<h3>World</h3>
-		<p>{{gui.message}}</p>
+		<p ng-bind-html="gui.message"></p>
 		<p>{{gui.actionPrompt}}</p>
 		<div class="btn-group">
-			<button ng-repeat="choice in gui.choices" ng-click="scenes.goToScene(choice.nextScene, choice.text, choice.data)" type="button" class="btn btn-link">{{choice.text}}</button>
+			<button ng-repeat="choice in gui.choices" ng-click="scenes.goToScene(choice.nextScene, choice.text, interceptable, choice.data)" type="button" class="btn btn-link">{{choice.text}}</button>
 		</div>
 	</div>
 	<div class="col-md-6">
@@ -13,8 +13,19 @@
 		<p>Generation: {{gameData.generation}}</p>
 		<p>Population: {{gameData.population}}</p>
 		<p>Religion: {{gameData.religion}}</p>
+		<p>Turns Stationary: {{gameData.turnsStationary}}</p>
 		<div ng-show="gameData.items">
 			<p ng-repeat="item in gameData.items">{{item}}</p>
 		</div>
+	</div>
+</div>
+<div class="row" style="margin-top:100px">
+	<div class="well">
+		Cheat:
+		<a ng-repeat="(name, data) in scenes.list" ng-click="scenes.goToScene(name, name, data.interceptable)">{{name}} </a>
+		<br>
+		 Population: <input type="number" ng-model="gameData.population" placeholder="pop">
+
+		
 	</div>
 </div>
