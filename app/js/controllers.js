@@ -2,29 +2,17 @@
 
 /* Controllers */
 
-function startingData(){
-	this.stage = "Band"
-	this.leader = 'Glaar'
-	this.scene = "intro"
-	this.generation = 1
-	this.population = 30
-	this.religion = 'Animism'
-	this.government = 'Egalitarianism'
-	this.agriculture = 0
-	this.turnsStationary = 0
-	this.carryingCapacity = 100
-}
-
 function startingAlerts(){
 	this.sacrifices = 0;
 }
 
 angular.module('myApp.controllers', ['ngSanitize'])
-  .controller('GameCtrl', ['$scope', 'utils', 'gameData', function($scope, utils, gameData) {
+  .controller('GameCtrl', ['$scope', 'utils', 'gameDataModel', function($scope, utils, gameDataModel) {
   	$scope.gui = {};
-  	$scope.gameData = gameData;
-  	$scope.gameData = new startingData;
-  	$scope.gameData.land = utils.randomLandDescription();
+  	$scope.gameDataModel = gameDataModel;
+  	gameDataModel.data.reset();
+  	console.log($scope.gameDataModel.data.religion)
+  	gameDataModel.data.land = utils.randomLandDescription();
 
   	$scope.alerts = {};
   	$scope.alerts.alertData = new startingAlerts();
@@ -45,8 +33,8 @@ angular.module('myApp.controllers', ['ngSanitize'])
 		  		{text: "Sacrifice", nextScene: 'sacrifice', data: {}}
 		  	],
 		  	script: function(data){
-		  		$scope.gui.message = "The mountain spews fire. The mountain spirit must be angry. Kinsman have always hunted and gathered here. They turn to you, " + $scope.gameData.leader + ", for guidance."
-		  		$scope.gameData = new startingData;
+		  		$scope.gui.message = "The mountain spews fire. The mountain spirit must be angry. Kinsman have always hunted and gathered here. They turn to you, " + gameDataModel.data.leader + ", for guidance."
+		  		gameDataModel.data.reset();
 		  	},
 		  	interceptable: false
 		},
@@ -58,7 +46,7 @@ angular.module('myApp.controllers', ['ngSanitize'])
 		  		{text: "Move on", nextScene: 'firstMove', data: {}}
 		  	],
 		  	script: function(data){
-		  		$scope.gameData.population += Math.round((Math.random()-.5)*2);
+		  		gameDataModel.data.population += Math.round((Math.random()-.5)*2);
 		  		$scope.gui.message = this.message;
 		  	},
 		  	interceptable: false
@@ -71,10 +59,10 @@ angular.module('myApp.controllers', ['ngSanitize'])
 		  		{text: "Move on", nextScene: 'firstMove', data: {}}
 		  	],
 		  	script: function(data){
-		  		$scope.gameData.land = utils.randomLandDescription();
-		  		$scope.scenes.list.firstMove.message =  "Your band moves onward, foraging as you go. You reach a "+ $scope.gameData.land +".";
-		  		$scope.gameData.population += Math.round((Math.random()-.5)*3);
-		  		$scope.gameData.turnsStationary = 0;
+		  		gameDataModel.data.land = utils.randomLandDescription();
+		  		$scope.scenes.list.firstMove.message =  "Your band moves onward, foraging as you go. You reach a "+ gameDataModel.data.land +".";
+		  		gameDataModel.data.population += Math.round((Math.random()-.5)*3);
+		  		gameDataModel.data.turnsStationary = 0;
 		  		$scope.gui.message = this.message;
 		  	},
 		  	interceptable: false
@@ -87,10 +75,10 @@ angular.module('myApp.controllers', ['ngSanitize'])
 		  		{text: "Move on", nextScene: 'move', data: {}}
 		  	],
 		  	script: function(data){
-		  		$scope.gameData.land = utils.randomLandDescription();
-		  		$scope.scenes.list.move.message =  "Your band moves onward, foraging as you go. You reach a "+ $scope.gameData.land +".";
-		  		$scope.gameData.population += Math.round((Math.random()-.5)*3);
-		  		$scope.gameData.turnsStationary = 0;
+		  		gameDataModel.data.land = utils.randomLandDescription();
+		  		$scope.scenes.list.move.message =  "Your band moves onward, foraging as you go. You reach a "+ gameDataModel.data.land +".";
+		  		gameDataModel.data.population += Math.round((Math.random()-.5)*3);
+		  		gameDataModel.data.turnsStationary = 0;
 		  		$scope.gui.message = this.message;
 
 		  	},
@@ -100,23 +88,23 @@ angular.module('myApp.controllers', ['ngSanitize'])
 			message: "Your people are content in their new land. Food is abundant and the weather is fair. Children are born who will never know life at the foot of the angry mountain. After several seasons you scrape your toe and die from an infection. No matter - your kinsman are wise and can thrive without you.",
 			actionPrompt: "Your band lives on - with the right leadership, it can thrive.",
 			choices: [
-		  		{text: "Stay in the "+ $scope.gameData.land, nextScene: 'stayAndGrow', data: {}},
+		  		{text: "Stay in the "+ gameDataModel.data.land, nextScene: 'stayAndGrow', data: {}},
 		  		{text: "Move on", nextScene: 'move', data: {}}
 		  	],
 		  	script: function(data){
-		  		$scope.gameData.population += Math.round(Math.random()*5)+2;
-		  		$scope.gameData.generation += 1;
-		  		$scope.gameData.turnsStationary = 1;
+		  		gameDataModel.data.population += Math.round(Math.random()*5)+2;
+		  		gameDataModel.data.generation += 1;
+		  		gameDataModel.data.turnsStationary = 1;
 		  		$scope.gui.message = this.message;
 		  	},
 		  	interceptable: false
 		},
 		stayAndGrow: {
-			message: "The "+ $scope.gameData.land +" becomes home. One of your key concerns is population growth.",
+			message: "The "+ gameDataModel.data.land +" becomes home. One of your key concerns is population growth.",
 			actionPrompt: "What does the future hold for your band?",
 			choices: utils.growthChoices,
 		  	script: function(data){
-		  		$scope.gameData.turnsStationary = 1;
+		  		gameDataModel.data.turnsStationary = 1;
 		  		$scope.gui.message = this.message;
 		  	},
 		  	interceptable: false
@@ -126,9 +114,9 @@ angular.module('myApp.controllers', ['ngSanitize'])
 			actionPrompt: "",
 			choices: utils.growthChoices,
 		  	script: function(data){
-		  		$scope.gameData.generation += 1;
-		  		$scope.gameData.turnsStationary += 1;
-		  		var growthReturn = $scope.growthProcessing(data, $scope.gameData.population, $scope.gameData.carryingCapacity)
+		  		gameDataModel.data.generation += 1;
+		  		gameDataModel.data.turnsStationary += 1;
+		  		var growthReturn = $scope.growthProcessing(data, gameDataModel.data.population, gameDataModel.data.carryingCapacity)
 		  		this.message = growthReturn.message;
 		  		this.actionPrompt = growthReturn.actionPrompt;
 		  		this.choices = growthReturn.choices;
@@ -160,7 +148,7 @@ angular.module('myApp.controllers', ['ngSanitize'])
 		  		{text: "Restart", nextScene: 'intro', data: {}}
 		  	],
 		  	script: function(data){
-		  		$scope.gameData.population = 0;
+		  		gameDataModel.data.population = 0;
 		  		$scope.alerts.alertData.sacrifices += 1;
 		  		$scope.gui.message = this.message;
 		  	},
@@ -181,14 +169,14 @@ angular.module('myApp.controllers', ['ngSanitize'])
 		}
 	};
 	$scope.scenes.goToScene = function(sceneName, text, interceptable, data) {
-		$scope.gameData.scene = sceneName;
+		gameDataModel.data.scene = sceneName;
 
 		console.log('Scene: ' + sceneName + " Text: " + text);
-		$scope.gui.actionPrompt = $scope.scenes.list[$scope.gameData.scene].actionPrompt
-		$scope.gui.choices = $scope.scenes.list[$scope.gameData.scene].choices
-		$scope.scenes.list[$scope.gameData.scene].script(data);
+		$scope.gui.actionPrompt = $scope.scenes.list[gameDataModel.data.scene].actionPrompt
+		$scope.gui.choices = $scope.scenes.list[gameDataModel.data.scene].choices
+		$scope.scenes.list[gameDataModel.data.scene].script(data);
 
-		if ($scope.scenes.list[$scope.gameData.scene].interceptable){
+		if ($scope.scenes.list[gameDataModel.data.scene].interceptable){
 			var interceptReturn = $scope.interceptEvaluation(sceneName);
 	  		if (interceptReturn.intercepted == true){
 	  			$scope.gui.message += interceptReturn.message;
@@ -243,7 +231,7 @@ angular.module('myApp.controllers', ['ngSanitize'])
 			choices: utils.growthChoices
 		}
 
-		$scope.gameData.population = population
+		gameDataModel.data.population = population
 		return sceneInfo
 	}
 
@@ -256,11 +244,11 @@ angular.module('myApp.controllers', ['ngSanitize'])
 
 
 		// agriculture
-		if (($scope.gameData.turnsStationary > 1) && !$scope.gameData.agriculture){
-			var compoundingOdds = 0.95;
-			interceptReturn.intercepted = (Math.random() > Math.pow(compoundingOdds,$scope.gameData.turnsStationary))
+		if ((gameDataModel.data.turnsStationary > 1) && !gameDataModel.data.agriculture){
+			var compoundingOdds = 0.99;
+			interceptReturn.intercepted = (Math.random() > Math.pow(compoundingOdds,gameDataModel.data.turnsStationary))
 			if (interceptReturn.intercepted) {
-				$scope.gameData.agriculture = 1;
+				gameDataModel.data.agriculture = 1;
 				interceptReturn.message = "<br /><br />You've discovered agriculture!"
 				interceptReturn.actionPrompt = "Wheeeee!";
 				interceptReturn.choices = [
@@ -277,9 +265,9 @@ angular.module('myApp.controllers', ['ngSanitize'])
 
 
 
-	$scope.gui.actionPrompt = $scope.scenes.list[$scope.gameData.scene].actionPrompt
-	$scope.gui.choices = $scope.scenes.list[$scope.gameData.scene].choices
-	$scope.scenes.list[$scope.gameData.scene].script()
+	$scope.gui.actionPrompt = $scope.scenes.list[gameDataModel.data.scene].actionPrompt
+	$scope.gui.choices = $scope.scenes.list[gameDataModel.data.scene].choices
+	$scope.scenes.list[gameDataModel.data.scene].script()
 
   }])
   .controller('MyCtrl2', ['$scope', function($scope) {

@@ -53,7 +53,23 @@ angular.module('myApp.services', []).
 		}
   	
 	}]).
-	service('gameData', [function(){
-		
+	service('gameDataModel', [function(){
+		this.data = {}
+
+		this.data.reset = function(){
+
+			this.stage = "Band"
+			this.leader = 'Glaar'
+			this.scene = "intro"
+			this.generation = 1
+			this.population = 30
+			this.religion = 'Animism'
+			this.government = 'Egalitarianism'
+			this.agriculture = 0
+			this.turnsStationary = 0
+			this.carryingCapacity = 100
+
+		}
+
 	}])
 
