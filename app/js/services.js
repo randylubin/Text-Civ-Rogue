@@ -127,16 +127,18 @@ angular.module('myApp.services', []).
 	service('alerts', [function(){
 		this.data = {}
 
+		var parentThis = this;
+
 		this.data.reset = function(){
 			this.sacrifices = 0;
 		}
 
 		this.data.messages = function(){
-		if (this.sacrifices >= 2){
-			alert("It's a volcano... no amount of sacrifice will save you.");
-			this.data.sacrifices = 0;
-		}
-	};
+			if (this.sacrifices >= 2){
+				alert("It's a volcano... no amount of sacrifice will save you.");
+				parentThis.data.sacrifices = 0;
+			}
+		};
 
 	}]).
 	service('sceneModel', ['guiModel', 'utils', 'gameDataModel', 'alerts', function(guiModel, utils, gameDataModel, alerts) {
@@ -289,16 +291,16 @@ angular.module('myApp.services', []).
 			}
 		};
 
-		this.goToScene = function(sceneName, text, interceptable, data) {
+		this.data.goToScene = function(sceneName, text, interceptable, data) {
 			gameDataModel.data.scene = sceneName;
 
 			console.log('Scene: ' + sceneName + " Text: " + text);
-			guiModel.data.actionPrompt = this.data.list[gameDataModel.data.scene].actionPrompt
-			guiModel.data.choices = this.data.list[gameDataModel.data.scene].choices
-			this.data.list[gameDataModel.data.scene].script(data);
+			guiModel.data.actionPrompt = scenez.data.list[gameDataModel.data.scene].actionPrompt
+			guiModel.data.choices = scenez.data.list[gameDataModel.data.scene].choices
+			scenez.data.list[gameDataModel.data.scene].script(data);
 
-			if (this.data.list[gameDataModel.data.scene].interceptable){
-				var interceptReturn = this.interceptEvaluation(sceneName);
+			if (scenez.data.list[gameDataModel.data.scene].interceptable){
+				var interceptReturn = scenez.data.interceptEvaluation(sceneName);
 		  		if (interceptReturn.intercepted == true){
 		  			guiModel.data.message += interceptReturn.message;
 		  			guiModel.data.actionPrompt = interceptReturn.actionPrompt;
@@ -309,7 +311,7 @@ angular.module('myApp.services', []).
 			alerts.data.messages();
 		};
 
-		this.interceptEvaluation = function(data){	
+		this.data.interceptEvaluation = function(data){	
 
 			var interceptReturn = {
 				intercepted: false
