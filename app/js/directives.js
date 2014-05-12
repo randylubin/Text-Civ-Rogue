@@ -23,4 +23,4 @@ angular.module('myApp.directives', []).
             	console.log("I'm leaving");
         	})
     	}
-	});
+	})
