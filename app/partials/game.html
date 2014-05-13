@@ -2,10 +2,10 @@
 <div class="row">
 	<div class="col-md-6">
 		<h3>World</h3>
-		<p ng-bind-html="gui.message"></p>
-		<p>{{gui.actionPrompt}}</p>
+		<p ng-bind-html="guiModel.data.message"></p>
+		<p>{{guiModel.data.actionPrompt}}</p>
 		<div class="btn-group">
-			<button ng-repeat="choice in gui.choices" ng-click="scenes.goToScene(choice.nextScene, choice.text, interceptable, choice.data)" type="button" class="btn btn-link">{{choice.text}}</button>
+			<button ng-repeat="choice in guiModel.data.choices" ng-click="scenes.goToScene(choice.nextScene, choice.text, interceptable, choice.data)" type="button" class="btn btn-link">{{choice.text}}</button>
 		</div>
 	</div>
 	<div class="col-md-6">
