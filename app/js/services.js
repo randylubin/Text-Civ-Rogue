@@ -156,6 +156,7 @@ angular.module('myApp.services', []).
 			  	script: function(data){
 			  		guiModel.data.message = "The mountain spews fire. The mountain spirit must be angry. Kinsman have always hunted and gathered here. They turn to you, " + gameDataModel.data.leader + ", for guidance."
 			  		gameDataModel.data.reset();
+			  		gameDataModel.data.land = utils.randomLandDescription();
 			  	},
 			  	interceptable: false
 			},
@@ -198,6 +199,7 @@ angular.module('myApp.services', []).
 			  	script: function(data){
 			  		gameDataModel.data.land = utils.randomLandDescription();
 			  		scenez.data.list.move.message =  "Your band moves onward, foraging as you go. You reach a "+ gameDataModel.data.land +".";
+			  		console.log(gameDataModel.data.land)
 			  		gameDataModel.data.population += Math.round((Math.random()-.5)*3);
 			  		gameDataModel.data.turnsStationary = 0;
 			  		guiModel.data.message = this.message;
@@ -221,10 +223,11 @@ angular.module('myApp.services', []).
 			  	interceptable: false
 			},
 			stayAndGrow: {
-				message: "The "+ gameDataModel.data.land +" becomes home. One of your key concerns is population growth.",
+				message: "The " + gameDataModel.data.land + " becomes home. One of your key concerns is population growth.",
 				actionPrompt: "What does the future hold for your band?",
 				choices: utils.growthChoices,
 			  	script: function(data){
+			  		scenez.data.list.stayAndGrow.message = "The " + gameDataModel.data.land + " becomes home. One of your key concerns is population growth."
 			  		gameDataModel.data.turnsStationary = 1;
 			  		guiModel.data.message = this.message;
 			  	},
