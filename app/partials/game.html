@@ -4,16 +4,17 @@
 		<h3>World</h3>
 		<p ng-bind-html="guiModel.data.message"></p>
 		<p>{{guiModel.data.actionPrompt}}</p>
-		<div class="btn-group">
-			<button ng-repeat="choice in guiModel.data.choices" ng-click="scenes.goToScene(choice.nextScene, choice.text, interceptable, choice.data)" type="button" class="btn btn-link">{{choice.text}}</button>
+		<div ng-repeat="choiceSet in guiModel.data.choices">
+			<div class="btn-group">
+				<button ng-repeat="choice in choiceSet" ng-click="scenes.goToScene(choice.nextScene, choice.text, interceptable, choice.data)" type="button" class="btn btn-link">{{choice.text}}</button>
+			</div>
 		</div>
 	</div>
 	<div class="col-md-6">
 		<h3>{{gameDataModel.data.stage}} Details</h3>
 		<p>Generation: {{gameDataModel.data.generation}}</p>
 		<p>Population: {{gameDataModel.data.population}}</p>
-		<p>Religion: {{gameDataModel.data.religion}}</p>
-		<p>Turns Stationary: {{gameDataModel.data.turnsStationary}}</p>
+		<h4>Items</h4>
 		<div ng-show="gameDataModel.data.items">
 			<p ng-repeat="item in gameDataModel.data.items">{{item}}</p>
 		</div>

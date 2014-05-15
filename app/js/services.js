@@ -33,12 +33,28 @@ angular.module('myApp.services', []).
 			"place"
 		],
 
-		this.growthChoices = [
+		this.growthChoices = [[
 	  		{text: "Stablize Population", nextScene: 'growth', data: ['stable']},
 	  		{text: "High Growth", nextScene: 'growth', data: ['high']},
 	  		{text: "Shrink Band", nextScene: 'growth', data: ['shrink']},
 	  		{text: "Move on", nextScene: 'move', data: {}}
-	  	],
+	  	]],
+
+	  	this.bandChoices = [
+	  		[
+		  		{text: "Stablize Population", nextScene: 'growth', data: ['stable']},
+		  		{text: "High Growth", nextScene: 'growth', data: ['high']},
+		  		{text: "Shrink Band", nextScene: 'growth', data: ['shrink']}
+	  		],
+	  		[
+	  			{text: "Hunt", nextScene: 'growth', data: ['stable']},
+		  		{text: "Gather", nextScene: 'growth', data: ['stable']}
+	  		],
+	  		[
+	  			{text: "Move on", nextScene: 'move', data: []}
+	  		]
+
+	  	]
 
 		this.pickRandomFromList = function(list){
 			return list[Math.floor(Math.random()*list.length)];
@@ -54,6 +70,9 @@ angular.module('myApp.services', []).
 
 		this.growthProcessing = function(data, population, carryingCapacity){
 			var message;
+			if (!data){
+				data = ['stable'];
+			}
 
 			// population growth
 			switch (data[0]){
@@ -92,7 +111,7 @@ angular.module('myApp.services', []).
 			var sceneInfo = {
 				message: message,
 				actionPrompt: actionPrompt,
-				choices: this.growthChoices,
+				choices: this.bandChoices,
 				newPopulation: population
 			}
 
@@ -149,160 +168,154 @@ angular.module('myApp.services', []).
 		this.data.list = {
 			intro: {
 				actionPrompt: "Abandon homeland or make a sacrifice to the mountain?",
-				choices: [
-			  		{text: "Flee", nextScene: 'flee', data: {}},
-			  		{text: "Sacrifice", nextScene: 'sacrifice', data: {}}
-			  	],
 			  	script: function(data){
 			  		guiModel.data.message = "The mountain spews fire. The mountain spirit must be angry. Kinsman have always hunted and gathered here. They turn to you, " + gameDataModel.data.leader + ", for guidance."
 			  		gameDataModel.data.reset();
 			  		gameDataModel.data.land = utils.randomLandDescription();
-			  	},
-			  	interceptable: false
+			  		guiModel.data.choices = [[
+				  		{text: "Flee", nextScene: 'flee', data: {}},
+				  		{text: "Sacrifice", nextScene: 'sacrifice', data: {}}
+				  	]]
+			  	}
 			},
 			flee: {
-				message: "You lead your band away from the mountain. The mountain explodes. The band heads east, away from the ash. They stop in a valley, lush with flora and fauna.",
 				actionPrompt: "Settle here or move on?",
-				choices: [
-			  		{text: "Settle", nextScene: 'firstSettle', data: {}},
-			  		{text: "Move on", nextScene: 'firstMove', data: {}}
-			  	],
 			  	script: function(data){
 			  		gameDataModel.data.population += Math.round((Math.random()-.5)*2);
-			  		guiModel.data.message = this.message;
-			  	},
-			  	interceptable: false
+			  		guiModel.data.message = "You lead your band away from the mountain. The mountain explodes. The band heads east, away from the ash. They stop in a valley, lush with flora and fauna.";
+			  		guiModel.data.choices = [[
+				  		{text: "Settle", nextScene: 'firstSettle', data: {}},
+				  		{text: "Move on", nextScene: 'firstMove', data: {}}
+				  	]]
+			  	}
 			},
 			firstMove: {
-				message: "", // done in script
 				actionPrompt: "Settle here or move on?",
-				choices: [
-			  		{text: "Settle", nextScene: 'firstSettle', data: {}},
-			  		{text: "Move on", nextScene: 'firstMove', data: {}}
-			  	],
 			  	script: function(data){
 			  		gameDataModel.data.land = utils.randomLandDescription();
-			  		scenez.data.list.firstMove.message =  "Your band moves onward, foraging as you go. You reach a "+ gameDataModel.data.land +".";
+			  		guiModel.data.message =  "Your band moves onward, foraging as you go. You reach a "+ gameDataModel.data.land +".";
+			  		guiModel.data.choices = [[
+				  		{text: "Settle", nextScene: 'firstSettle', data: {}},
+				  		{text: "Move on", nextScene: 'firstMove', data: {}}
+				  	]]
 			  		gameDataModel.data.population += Math.round((Math.random()-.5)*3);
 			  		gameDataModel.data.turnsStationary = 0;
-			  		guiModel.data.message = this.message;
-			  	},
-			  	interceptable: false
+
+
+			  	}
 			},
 			move: {
-				message: "", //done in script
 				actionPrompt: "Settle here or move on?",
-				choices: [
-			  		{text: "Settle", nextScene: 'stayAndGrow', data: {}},
-			  		{text: "Move on", nextScene: 'move', data: {}}
-			  	],
 			  	script: function(data){
 			  		gameDataModel.data.land = utils.randomLandDescription();
-			  		scenez.data.list.move.message =  "Your band moves onward, foraging as you go. You reach a "+ gameDataModel.data.land +".";
+			  		guiModel.data.message =  "Your band moves onward, foraging as you go. You reach a "+ gameDataModel.data.land +".";
 			  		console.log(gameDataModel.data.land)
 			  		gameDataModel.data.population += Math.round((Math.random()-.5)*3);
 			  		gameDataModel.data.turnsStationary = 0;
 			  		guiModel.data.message = this.message;
+			  		guiModel.data.choices = [[
+				  		{text: "Settle", nextScene: 'stayAndGrow', data: {}},
+				  		{text: "Move on", nextScene: 'move', data: {}}
+				  	]]
 
-			  	},
-			  	interceptable: false
+			  	}
 			},
 			firstSettle: {
-				message: "Your people are content in their new land. Food is abundant and the weather is fair. Children are born who will never know life at the foot of the angry mountain. After several seasons you scrape your toe and die from an infection. No matter - your kinsman are wise and can thrive without you.",
 				actionPrompt: "Your band lives on - with the right leadership, it can thrive.",
-				choices: [
-			  		{text: "Stay in the "+ gameDataModel.data.land, nextScene: 'stayAndGrow', data: {}},
-			  		{text: "Move on", nextScene: 'move', data: {}}
-			  	],
 			  	script: function(data){
 			  		gameDataModel.data.population += Math.round(Math.random()*5)+2;
 			  		gameDataModel.data.generation += 1;
 			  		gameDataModel.data.turnsStationary = 1;
-			  		guiModel.data.message = this.message;
-			  	},
-			  	interceptable: false
+			  		guiModel.data.message = "Your people are content in their new land. Food is abundant and the weather is fair. Children are born who will never know life at the foot of the angry mountain. After several seasons you scrape your toe and die from an infection. No matter - your kinsman are wise and can thrive without you.";
+			  		guiModel.data.choices = [[
+				  		{text: "Stay in the "+ gameDataModel.data.land, nextScene: 'stayAndGrow', data: {}},
+				  		{text: "Move on", nextScene: 'move', data: {}}
+				  	]]
+			  	}
 			},
 			stayAndGrow: {
-				message: "The " + gameDataModel.data.land + " becomes home. One of your key concerns is population growth.",
 				actionPrompt: "What does the future hold for your band?",
-				choices: utils.growthChoices,
 			  	script: function(data){
 			  		scenez.data.list.stayAndGrow.message = "The " + gameDataModel.data.land + " becomes home. One of your key concerns is population growth."
 			  		gameDataModel.data.turnsStationary = 1;
-			  		guiModel.data.message = this.message;
+			  		guiModel.data.message = "The " + gameDataModel.data.land + " becomes home. One of your key concerns is population growth.";
+			  		guiModel.data.choices = utils.growthChoices
 			  	},
-			  	interceptable: false
+			  	manyChoices: true
 			},
 			growth: {
-				message: "",
 				actionPrompt: "",
-				choices: utils.growthChoices,
 			  	script: function(data){
 			  		gameDataModel.data.generation += 1;
 			  		gameDataModel.data.turnsStationary += 1;
 			  		var growthReturn = utils.growthProcessing(data, gameDataModel.data.population, gameDataModel.data.carryingCapacity)
 			  		this.message = growthReturn.message;
 			  		this.actionPrompt = growthReturn.actionPrompt;
-			  		this.choices = growthReturn.choices;
+			  		//guiModel.data.choices = utils.growthChoices
+			  		guiModel.data.choices = growthReturn.choices;
 			  		gameDataModel.data.population = growthReturn.newPopulation;
-
 
 			  		guiModel.data.message = this.message;
 			  		guiModel.data.actionPrompt = this.actionPrompt
 			  	},
-			  	interceptable: true
+			  	interceptable: true,
+			  	manyChoices: true
 			},
 			sacrifice: {
-				message: "You tell your kinsmen to prepare a giant pyre for the sacrifice. They start building. They gather food for a feast.",
 				actionPrompt: "What shall be sacrificed?",
-				choices: [
-			  		{text: "Goat", nextScene: 'pyroclastic', data: {}},
-			  		{text: "Chicken", nextScene: 'pyroclastic', data: {}},
-			  		{text: "An Elder", nextScene: 'pyroclastic', data: {}}
-			  	],
 			  	script: function(data){
-			  		guiModel.data.message = this.message;
+			  		guiModel.data.message = "You tell your kinsmen to prepare a giant pyre for the sacrifice. They start building. They gather food for a feast.";
+			  		guiModel.data.choices = [[
+				  		{text: "Goat", nextScene: 'pyroclastic', data: {}},
+				  		{text: "Chicken", nextScene: 'pyroclastic', data: {}},
+				  		{text: "An Elder", nextScene: 'pyroclastic', data: {}}
+				  	]]
 
-			  	},
-			  	interceptable: false
+			  	}
 			},
 			pyroclastic: {
-				message: "The pyre illuminates the night sky. As the ceremony begins, you are engulfed by a pyroclastic flow. Your band dies a swift and painless death.",
 				actionPrompt: "Game Over",
-				choices: [
-			  		{text: "Restart", nextScene: 'intro', data: {}}
-			  	],
 			  	script: function(data){
 			  		gameDataModel.data.population = 0;
 			  		alerts.data.sacrifices += 1;
-			  		guiModel.data.message = this.message;
-			  	},
-			  	interceptable: false
+			  		guiModel.data.message = "The pyre illuminates the night sky. As the ceremony begins, you are engulfed by a pyroclastic flow. Your band dies a swift and painless death.";
+			  		guiModel.data.choices = [[
+				  		{text: "Restart", nextScene: 'intro', data: {}}
+				  	]]
+			  	}
+			},
+			firstAgriculture: {
+				actionPrompt: "Wheee!",
+			  	script: function(data){
+			  		guiModel.data.message = "The plants return year after year. You put seeds in the ground elsewhere and the crops grow there, too.";
+			  		guiModel.data.choices = [[
+				  		{text: "Restart", nextScene: 'intro', data: {}},
+				  		{text: "Restart", nextScene: 'intro', data: {}}
+				  	]]
+				  	gameDataModel.data.agriculture = 1;
+			  	}
 			},
 			TODO: {
-				message: "",
 				actionPrompt: "",
-				choices: [
-			  		{text: "Restart", nextScene: 'intro', data: {}},
-			  		{text: "Restart", nextScene: 'intro', data: {}}
-			  	],
 			  	script: function(data){
-			  		guiModel.data.message = this.message;
-
-			  	},
-			  	interceptable: false
+			  		guiModel.data.message = "";
+			  		guiModel.data.choices = [[
+				  		{text: "Restart", nextScene: 'intro', data: {}},
+				  		{text: "Restart", nextScene: 'intro', data: {}}
+				  	]]
+			  	}
 			}
 		};
 
 		this.data.goToScene = function(sceneName, text, interceptable, data) {
 			gameDataModel.data.scene = sceneName;
+			var newScene = scenez.data.list[gameDataModel.data.scene]
 
 			console.log('Scene: ' + sceneName + " Text: " + text);
-			guiModel.data.actionPrompt = scenez.data.list[gameDataModel.data.scene].actionPrompt
-			guiModel.data.choices = scenez.data.list[gameDataModel.data.scene].choices
-			scenez.data.list[gameDataModel.data.scene].script(data);
+			guiModel.data.actionPrompt = newScene.actionPrompt
+			newScene.script(data);
 
-			if (scenez.data.list[gameDataModel.data.scene].interceptable){
+			if (newScene.interceptable){
 				var interceptReturn = scenez.data.interceptEvaluation(sceneName);
 		  		if (interceptReturn.intercepted == true){
 		  			guiModel.data.message += interceptReturn.message;
@@ -317,7 +330,8 @@ angular.module('myApp.services', []).
 		this.data.interceptEvaluation = function(data){	
 
 			var interceptReturn = {
-				intercepted: false
+				intercepted: false,
+				message: "<br /><br />"
 			}
 
 			// agriculture
@@ -325,13 +339,23 @@ angular.module('myApp.services', []).
 				var compoundingOdds = 0.99;
 				interceptReturn.intercepted = (Math.random() > Math.pow(compoundingOdds,gameDataModel.data.turnsStationary))
 				if (interceptReturn.intercepted) {
-					gameDataModel.data.agriculture = 1;
-					interceptReturn.message = "<br /><br />You've discovered agriculture!"
-					interceptReturn.actionPrompt = "Wheeeee!";
-					interceptReturn.choices = [
-				  		{text: "Restart", nextScene: 'intro', data: {}},
-				  		{text: "Restart", nextScene: 'intro', data: {}}
-				  	]				
+					interceptReturn.message = "One of your kin notice abundant vegetation on the site of an old midden."
+					interceptReturn.actionPrompt = "Do you investigate further or discourage exploration of the dump?";
+					interceptReturn.choices = [[
+				  		{text: "Investigate", nextScene: 'firstAgriculture', data: {}},
+				  		{text: "Discourage", nextScene: 'growth', data: ['stable']}
+				  	]]				
+				}
+			}
+
+			//band interaction
+			if (!interceptReturn.intercepted) {
+				var bandOdds = 0.25
+				interceptReturn.intercepted = Math.random() < bandOdds
+				if (interceptReturn.intercepted){
+					interceptReturn.message = "You meet a nearby band."
+					interceptReturn.actionPrompt = "what do you do?"
+					interceptReturn.choices = utils.growthChoices //TODO
 				}
 			}
 
