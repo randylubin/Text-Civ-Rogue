@@ -182,11 +182,12 @@ angular.module('myApp.services', []).
 				actionPrompt: "Settle here or move on?",
 			  	script: function(data){
 			  		gameDataModel.data.population += Math.round((Math.random()-.5)*2);
-			  		guiModel.data.message = "You lead your band away from the mountain. The mountain explodes. The band heads east, away from the ash. They stop in a valley, lush with flora and fauna.";
+			  		guiModel.data.message = "You lead your band away from the mountain. The mountain explodes. The band heads east, away from the ash. Safely away, they stop in a valley, lush with flora and fauna.";
 			  		guiModel.data.choices = [[
 				  		{text: "Settle", nextScene: 'firstSettle', data: {}},
 				  		{text: "Move on", nextScene: 'firstMove', data: {}}
-				  	]]
+				  	]];
+				  	gameDataModel.data.land = 'lush valley'
 			  	}
 			},
 			firstMove: {
